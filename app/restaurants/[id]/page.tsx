@@ -5,14 +5,15 @@ import Image from "next/image";
 import { StarIcon } from "lucide-react";
 import DeliveryInfo from "@/app/_components/delivery-info";
 import ProductList from "@/app/_components/product-list";
+import CartBanner from "./_components/cart-banner";
 
-interface RestaurantPagePros {
+interface RestaurantPageProps {
   params: {
     id: string;
   };
 }
 
-const RestaurantPage = async ({ params: { id } }: RestaurantPagePros) => {
+const RestaurantPage = async ({ params: { id } }: RestaurantPageProps) => {
   const restaurant = await db.restaurant.findUnique({
     where: {
       id,
@@ -53,6 +54,7 @@ const RestaurantPage = async ({ params: { id } }: RestaurantPagePros) => {
   if (!restaurant) {
     return notFound();
   }
+
   return (
     <div>
       <RestaurantImage restaurant={restaurant} />
@@ -107,7 +109,10 @@ const RestaurantPage = async ({ params: { id } }: RestaurantPagePros) => {
           <ProductList products={category.products} />
         </div>
       ))}
+
+      <CartBanner restaurant={restaurant} />
     </div>
   );
 };
+
 export default RestaurantPage;
