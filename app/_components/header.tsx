@@ -30,19 +30,20 @@ const Header = () => {
 
   return (
     <div className="flex justify-between px-5 pt-6">
-      <div className="relative h-[30px] w-[100px]">
-        <Link href="/">
+      <Link href="/">
+        <div className="relative h-[30px] w-[100px]">
           <Image
             src="/logo.png"
             alt="FSW Foods"
+            sizes="100%"
             fill
             className="object-cover"
           />
-        </Link>
-      </div>
+        </div>
+      </Link>
 
       <Sheet>
-        <SheetTrigger>
+        <SheetTrigger asChild>
           <Button
             size="icon"
             variant="outline"
@@ -120,9 +121,12 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   className="w-full justify-start space-x-3 rounded-full text-sm font-normal"
+                  asChild
                 >
-                  <HeartIcon size={16} />
-                  <span className="block">Restaurantes Favoritos</span>
+                  <Link href="/my-favorite-restaurants">
+                    <HeartIcon size={16} />
+                    <span className="block">Restaurantes Favoritos</span>
+                  </Link>
                 </Button>
               </>
             )}

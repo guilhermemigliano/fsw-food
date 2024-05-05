@@ -9,8 +9,8 @@ import PromoBanner from "./_components/promo-banner";
 import RestaurantList from "./_components/restaurant-list";
 import Link from "next/link";
 
-export default async function Home() {
-  const products = await db.product.findMany({
+const fetch = async () => {
+  const getProducts = db.product.findMany({
     where: {
       discountPercentage: {
         gt: 0,
@@ -18,9 +18,37 @@ export default async function Home() {
     },
     take: 10,
     include: {
-      restaurant: { select: { name: true } },
+      restaurant: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
+
+  const getBurguersCategory = db.category.findFirst({
+    where: {
+      name: "Hambúrgueres",
+    },
+  });
+
+  const getPizzasCategory = db.category.findFirst({
+    where: {
+      name: "Pizzas",
+    },
+  });
+
+  const [products, burguersCategory, pizzasCategory] = await Promise.all([
+    getProducts,
+    getBurguersCategory,
+    getPizzasCategory,
+  ]);
+
+  return { products, burguersCategory, pizzasCategory };
+};
+
+const Home = async () => {
+  const { products, burguersCategory, pizzasCategory } = await fetch();
 
   return (
     <>
@@ -28,25 +56,30 @@ export default async function Home() {
       <div className="px-5 pt-6">
         <Search />
       </div>
+
       <div className="px-5 pt-6">
         <CategoryList />
       </div>
+
       <div className="px-5 pt-6">
-        <PromoBanner
-          src="/promo-banner-01.png"
-          alt="Até 30% de desconto em pizzas"
-        />
+        <Link href={`/categories/${pizzasCategory?.id}/products`}>
+          <PromoBanner
+            src="/promo-banner-01.png"
+            alt="Até 30% de desconto em pizzas!"
+          />
+        </Link>
       </div>
-      <div className="pt-6 space-y-4">
-        <div className="px-5 flex justify-between items-center">
+
+      <div className="space-y-4 pt-6">
+        <div className="flex items-center justify-between px-5">
           <h2 className="font-semibold">Pedidos Recomendados</h2>
 
           <Button
-            variant={"ghost"}
-            className="text-primary p-0 hover:bg-transparent h-fit"
+            variant="ghost"
+            className="h-fit p-0 text-primary hover:bg-transparent"
             asChild
           >
-            <Link href={"/products/recommended"}>
+            <Link href="/products/recommended">
               Ver todos
               <ChevronRightIcon size={16} />
             </Link>
@@ -56,22 +89,24 @@ export default async function Home() {
       </div>
 
       <div className="px-5 pt-6">
-        <PromoBanner
-          src="/promo-banner-02.png"
-          alt="A partir de R$17,90 em lanches"
-        />
+        <Link href={`/categories/${burguersCategory?.id}/products`}>
+          <PromoBanner
+            src="/promo-banner-02.png"
+            alt="A partir de R$17,90 em lanches"
+          />
+        </Link>
       </div>
 
-      <div className="py-6 space-y-4">
-        <div className="px-5 flex justify-between items-center">
+      <div className="space-y-4 py-6">
+        <div className="flex items-center justify-between px-5">
           <h2 className="font-semibold">Restaurantes Recomendados</h2>
 
           <Button
-            variant={"ghost"}
-            className="text-primary p-0 hover:bg-transparent h-fit"
+            variant="ghost"
+            className="h-fit p-0 text-primary hover:bg-transparent"
             asChild
           >
-            <Link href={"/restaurants/recommended"}>
+            <Link href="/restaurants/recommended">
               Ver todos
               <ChevronRightIcon size={16} />
             </Link>
@@ -81,4 +116,6 @@ export default async function Home() {
       </div>
     </>
   );
-}
+};
+
+export default Home;
